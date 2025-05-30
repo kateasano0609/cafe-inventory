@@ -385,8 +385,8 @@
                 
                 <div id="inventoryDisplay"></div>
                 
-                <button class="save-btn" onclick="saveInventory()">
-                    💾 Save Evening Count
+                <button class="save-btn" onclick="saveToGoogleSheets()">
+                    💾 Save to Google Sheets
                 </button>
             </div>
             
@@ -416,8 +416,9 @@
     </div>
 
     <script>
-        // Your Google Sheets ID and tab names
+        // Your Google Sheets ID and API configuration
         const SHEET_ID = '1Z0r0ys3OwvZVeNfB8VKhaCofgM4o7548NJ1JP5TTOJw';
+        const API_KEY = 'AIzaSyDz9vnpLAbaJc5q1_zN7yNqLbRLlD39c30'; // Replace with your actual API key
         const INVENTORY_SHEET = 'Inventory';
         const ORDERS_SHEET = 'Purchase Orders';
         const INVOICES_SHEET = 'Invoices';
@@ -428,48 +429,51 @@
         let invoices = [];
         let hasChanges = false;
         
-        // Load data from Google Sheets
+        // Load data from Google Sheets using API
         async function loadData() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('inventory').style.display = 'none';
             document.getElementById('error').style.display = 'none';
             
             try {
-                // Load inventory data
-                const inventoryUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${INVENTORY_SHEET}`;
+                // Load inventory data using Google Sheets API
+                const inventoryUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${INVENTORY_SHEET}?key=${API_KEY}`;
                 const inventoryResponse = await fetch(inventoryUrl);
-                const inventoryCsv = await inventoryResponse.text();
+                const inventoryJson = await inventoryResponse.json();
                 
-                // Parse inventory CSV data
-                const inventoryRows = parseCsv(inventoryCsv);
-                inventoryData = inventoryRows.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
-                    category: row[0] || '',
-                    item: row[1] || '',
-                    vendor: row[2] || '',
-                    par: parseFloat(row[3]) || 0,
-                    onHand: parseFloat(row[4]) || 0,
-                    waste: parseFloat(row[5]) || 0
-                }));
-                
-                // Try to load purchase orders (optional - might not exist yet)
-                try {
-                    const ordersUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDERS_SHEET}`;
-                    const ordersResponse = await fetch(ordersUrl);
-                    const ordersCsv = await ordersResponse.text();
-                    const ordersRows = parseCsv(ordersCsv);
-                    purchaseOrders = ordersRows.slice(1).filter(row => row.length >= 6).map(row => ({
-                        date: row[0] || '',
-                        vendor: row[1] || '',
-                        poNumber: row[2] || '',
-                        items: row[3] || '',
-                        totalCost: parseFloat(row[4]) || 0,
-                        status: row[5] || '',
-                        expectedDelivery: row[6] || '',
-                        notes: row[7] || '',
-                        receivedDate: row[8] || ''
+                if (inventoryJson.values && inventoryJson.values.length > 1) {
+                    // Skip header row and convert to inventory data
+                    inventoryData = inventoryJson.values.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
+                        category: row[0] || '',
+                        item: row[1] || '',
+                        vendor: row[2] || '',
+                        par: parseFloat(row[3]) || 0,
+                        onHand: parseFloat(row[4]) || 0,
+                        waste: parseFloat(row[5]) || 0
                     }));
+                }
+                
+                // Try to load purchase orders
+                try {
+                    const ordersUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${ORDERS_SHEET}?key=${API_KEY}`;
+                    const ordersResponse = await fetch(ordersUrl);
+                    const ordersJson = await ordersResponse.json();
+                    
+                    if (ordersJson.values && ordersJson.values.length > 1) {
+                        purchaseOrders = ordersJson.values.slice(1).filter(row => row.length >= 6).map(row => ({
+                            date: row[0] || '',
+                            vendor: row[1] || '',
+                            poNumber: row[2] || '',
+                            items: row[3] || '',
+                            totalCost: parseFloat(row[4]) || 0,
+                            status: row[5] || '',
+                            expectedDelivery: row[6] || '',
+                            notes: row[7] || '',
+                            receivedDate: row[8] || ''
+                        }));
+                    }
                 } catch (e) {
-                    console.log('Purchase Orders sheet not found or empty - that\'s okay');
+                    console.log('Purchase Orders sheet not found or empty');
                     purchaseOrders = [];
                 }
                 
@@ -481,30 +485,126 @@
                 console.error('Error loading data:', error);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error').style.display = 'block';
+                
+                // Fallback to CSV method if API fails
+                console.log('Falling back to CSV method...');
+                await loadDataFallback();
             }
         }
         
-        // Helper function to parse CSV
-        function parseCsv(csvText) {
-            return csvText.split('\n').map(row => {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
+        // Fallback method using CSV (original method)
+        async function loadDataFallback() {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${INVENTORY_SHEET}`;
+                const response = await fetch(url);
+                const csvText = await response.text();
                 
-                for (let i = 0; i < row.length; i++) {
-                    const char = row[i];
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        result.push(current.trim().replace(/^"|"$/g, ''));
-                        current = '';
-                    } else {
-                        current += char;
-                    }
+                const rows = parseCsv(csvText);
+                inventoryData = rows.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
+                    category: row[0] || '',
+                    item: row[1] || '',
+                    vendor: row[2] || '',
+                    par: parseFloat(row[3]) || 0,
+                    onHand: parseFloat(row[4]) || 0,
+                    waste: parseFloat(row[5]) || 0
+                }));
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('inventory').style.display = 'block';
+                renderInventory();
+            } catch (error) {
+                console.error('Fallback method also failed:', error);
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+        
+        // Save inventory data back to Google Sheets
+        async function saveToGoogleSheets() {
+            if (!hasChanges) {
+                alert('✅ No changes to save!');
+                return;
+            }
+            
+            if (API_KEY === 'YOUR_API_KEY_HERE') {
+                // Fallback to download method if API key not set
+                downloadBackup();
+                return;
+            }
+            
+            try {
+                // Show saving indicator
+                const saveBtn = document.querySelector('.save-btn');
+                const originalText = saveBtn.textContent;
+                saveBtn.textContent = '💾 Saving...';
+                saveBtn.disabled = true;
+                
+                // Prepare data for Google Sheets
+                const values = [['Category', 'Item', 'Vendor', 'Par', 'OnHand', 'Waste']];
+                inventoryData.forEach(item => {
+                    values.push([
+                        item.category,
+                        item.item,
+                        item.vendor,
+                        item.par,
+                        item.onHand,
+                        item.waste
+                    ]);
+                });
+                
+                // Update Google Sheets using API
+                const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${INVENTORY_SHEET}?valueInputOption=RAW&key=${API_KEY}`;
+                
+                const response = await fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        values: values
+                    })
+                });
+                
+                if (response.ok) {
+                    hasChanges = false;
+                    saveBtn.textContent = '✅ Saved!';
+                    setTimeout(() => {
+                        saveBtn.textContent = originalText;
+                        saveBtn.disabled = false;
+                    }, 2000);
+                    
+                    alert(`✅ Inventory saved to Google Sheets!\n\n📊 Summary:\n• Total items: ${inventoryData.length}\n• Critical items: ${inventoryData.filter(i => i.onHand === 0).length}\n• Low stock: ${inventoryData.filter(i => i.onHand > 0 && i.onHand <= i.par).length}\n\n📋 Check Shopping Lists tab for reorder needs`);
+                } else {
+                    throw new Error('Failed to save to Google Sheets');
                 }
-                result.push(current.trim().replace(/^"|"$/g, ''));
-                return result;
+                
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+                
+                // Fallback to download method
+                downloadBackup();
+                
+                alert('⚠️ Could not save directly to Google Sheets. Downloaded backup file instead.\n\nTo enable direct saving:\n1. Set up Google Sheets API\n2. Add your API key to the code');
+            }
+        }
+        
+        // Backup download method
+        function downloadBackup() {
+            const csvData = ['Category,Item,Vendor,Par,OnHand,Waste'];
+            inventoryData.forEach(item => {
+                csvData.push(`${item.category},${item.item},${item.vendor},${item.par},${item.onHand},${item.waste}`);
             });
+            
+            const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `inventory-backup-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            hasChanges = false;
         }
         
         function renderInventory() {
@@ -854,31 +954,27 @@
             alert(orderList);
         }
         
-        function saveInventory() {
-            if (!hasChanges) {
-                alert('✅ No changes to save!');
-                return;
-            }
-            
-            // Create a downloadable backup
-            const csvData = ['Category,Item,Vendor,Par,OnHand,Waste'];
-            inventoryData.forEach(item => {
-                csvData.push(`${item.category},${item.item},${item.vendor},${item.par},${item.onHand},${item.waste}`);
+        // Helper function to parse CSV
+        function parseCsv(csvText) {
+            return csvText.split('\n').map(row => {
+                const result = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < row.length; i++) {
+                    const char = row[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        result.push(current.trim().replace(/^"|"$/g, ''));
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                result.push(current.trim().replace(/^"|"$/g, ''));
+                return result;
             });
-            
-            const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `inventory-backup-${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            hasChanges = false;
-            
-            alert(`✅ Evening count saved!\n\n📊 Summary:\n• Total items: ${inventoryData.length}\n• Critical items: ${inventoryData.filter(i => i.onHand === 0).length}\n• Low stock: ${inventoryData.filter(i => i.onHand > 0 && i.onHand <= i.par).length}\n\n💾 Backup file downloaded\n📋 Check Shopping Lists tab for reorder needs`);
         }
         
         // Auto-save on page unload
