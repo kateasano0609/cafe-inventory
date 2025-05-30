@@ -1,629 +1,692 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2022.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.3px Arial; color: #000000; -webkit-text-stroke: #000000}
-    span.s1 {font: 12.0px 'Apple Color Emoji'}
-    span.s2 {font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: 0px #000000}
-    span.s3 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Inventory</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ2FmZSBJbnZlbnRvcnkiLCJzaG9ydF9uYW1lIjoiSW52ZW50b3J5IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1qUWlJR2hsYVdkb2REMGlNalFpSUhabGNuTnBiMjQ5SWpFdU1TSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklpQjJhV1YzUW05NFBTSXdJREFnTWpRZ01qUWlQaUJnSUdScGNtVmpkR2x2YmowZ2JIUnlJaUJtYVd4c1BTSWpNemN4WlRaMVBDOWNJRDB3SUV0bFRXODFOWFl4TURWeU5ERnlORTVpVkZoQU5XRnFUVlF5WnlJK1BDOXpkbWMrIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjI0eDI0In1dLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMzNDk4ZGIiLCJ0aGVtZV9jb2xvciI6IiMyYzNlNTAifQ==">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #dc3545;
+            background: #f8d7da;
+            margin: 20px;
+            border-radius: 10px;
+        }
+        
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 140px;
+            padding: 15px 10px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            padding: 20px;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        .category-section {
+            margin: 20px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .category-header {
+            background: linear-gradient(45deg, #16a085, #27ae60);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 80px;
+            gap: 10px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f3f4;
+            align-items: center;
+        }
+        
+        .item-grid.header {
+            background: #e9ecef;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .item-grid.critical {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .item-grid.low {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .item-grid.good {
+            background: #d1edff;
+            border-left: 4px solid #0066cc;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .status-critical {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-low {
+            background: #ffc107;
+            color: #856404;
+        }
+        
+        .status-good {
+            background: #28a745;
+            color: white;
+        }
+        
+        .save-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            background: linear-gradient(45deg, #219a52, #27ae60);
+        }
+        
+        .save-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .critical-alert {
+            background: #dc3545;
+            color: white;
+            padding: 15px 20px;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .vendor-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .vendor-section h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        .vendor-group {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .vendor-group h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .vendor-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        
+        .vendor-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            z-index: 1000;
+        }
+        
+        @media (max-width: 600px) {
+            .item-grid {
+                grid-template-columns: 2fr 80px 80px 80px 60px;
+                gap: 5px;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tabs {
+                font-size: 0.8rem;
+            }
+            
+            .tab {
+                min-width: 100px;
+                padding: 12px 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Cafe Inventory&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ2FmZSBJbnZlbnRvcnkiLCJzaG9ydF9uYW1lIjoiSW52ZW50b3J5IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1qUWlJR2hsYVdkb2REMGlNalFpSUhabGNuTnBiMjQ5SWpFdU1TSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklpQjJhV1YzUW05NFBTSXdJREFnTWpRZ01qUWlQaUJnSUdScGNtVmpkR2x2YmowZ2JIUnlJaUJtYVd4c1BTSWpNemN4WlRaMVBDOWNJRDB3SUV0bFRXODFOWFl4TURWeU5ERnlORTVpVkZoQU5XRnFUVlF5WnlJK1BDOXpkbWMrIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjI0eDI0In1dLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMzNDk4ZGIiLCJ0aGVtZV9jb2xvciI6IiMyYzNlNTAifQ=="&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>min-height: 100vh;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 800px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 auto;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255, 255, 255, 0.95);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(45deg, #2c3e50, #3498db);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header h1 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.loading {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #666;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.error {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #dc3545;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8d7da;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.summary {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 2px 5px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat-number {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #2c3e50;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat-label {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #666;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.category-section {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 5px 15px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.category-header {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(45deg, #16a085, #27ae60);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.item-grid {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: 2fr 1fr 1fr 1fr 80px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid #f1f3f4;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.item-grid.header {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #e9ecef;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.item-grid.critical {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8d7da;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-left: 4px solid #dc3545;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.item-grid.low {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #fff3cd;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-left: 4px solid #ffc107;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.item-grid.good {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #d1edff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-left: 4px solid #0066cc;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>input[type="number"] {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #e9ecef;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>input[type="number"]:focus {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>outline: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-color: #3498db;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.status-badge {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 5px 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.8rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.status-critical {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #dc3545;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.status-low {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #ffc107;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #856404;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.status-good {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #28a745;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.save-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(45deg, #27ae60, #2ecc71);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.save-btn:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(45deg, #219a52, #27ae60);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.save-btn:active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: scale(0.98);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.critical-alert {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #dc3545;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: pulse 2s infinite;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes pulse {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% { opacity: 1; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>50% { opacity: 0.7; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% { opacity: 1; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.reorder-section {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #fff3cd;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #ffc107;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.reorder-section h3 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #856404;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.vendor-group {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-left: 4px solid #3498db;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.vendor-group h4 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #2c3e50;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.vendor-items {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.vendor-item {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.refresh-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>right: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #3498db;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 1000;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media (max-width: 600px) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.item-grid {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>grid-template-columns: 2fr 80px 80px 80px 60px;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>gap: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>font-size: 0.9rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>.header h1 {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>.summary {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>grid-template-columns: repeat(2, 1fr);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="refresh-btn" onclick="loadData()" title="Refresh Data"&gt;<span class="s1">🔄</span>&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1&gt;<span class="s1">☕</span> Cafe Inventory&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;Evening Count &amp; Reorder Tracking&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="loading" class="loading"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span><span class="s1">📊</span> Loading inventory data...</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="error" class="error" style="display: none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span><span class="s1">❌</span> Could not load data. Check your internet connection and try refreshing.</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="content" style="display: none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="summary"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-number" id="totalItems"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;Total Items&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-number" id="criticalItems"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;Critical&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-number" id="lowItems"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;Low Stock&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="stat"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-number" id="goodItems"&gt;0&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="stat-label"&gt;Good Stock&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="criticalAlert" class="critical-alert" style="display: none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span><span class="s1">🚨</span> CRITICAL: Some items are out of stock! Notify manager immediately!</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="inventory"&gt;&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="reorderList" class="reorder-section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3&gt;<span class="s1">📋</span> Shopping Lists by Vendor&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="vendorLists"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="save-btn" onclick="saveToGoogleSheets()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span><span class="s1">💾</span> Save Evening Count</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// REPLACE THIS WITH YOUR ACTUAL GOOGLE SHEET ID</p>
-<p class="p3"><span class="s2"><span class="Apple-converted-space">        </span>const SHEET_ID = '</span><span class="s3">1Z0r0ys3OwvZVeNfB8VKhaCofgM4o7548NJ1JP5TTOJw</span><span class="s2">';</span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const SHEET_NAME = 'Sheet1';</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>let inventoryData = [];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let hasChanges = false;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Load data from Google Sheets</p>
-<p class="p1"><span class="Apple-converted-space">        </span>async function loadData() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('loading').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('content').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('error').style.display = 'none';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&amp;sheet=${SHEET_NAME}`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const response = await fetch(url);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const csvText = await response.text();</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Parse CSV data</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const rows = csvText.split('\n').map(row =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Simple CSV parser that handles quoted fields</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const result = [];</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>let current = '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>let inQuotes = false;</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>for (let i = 0; i &lt; row.length; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const char = row[i];</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>if (char === '"') {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>inQuotes = !inQuotes;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>} else if (char === ',' &amp;&amp; !inQuotes) {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>result.push(current.trim());</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>current = '';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>current += char;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>result.push(current.trim());</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>return result;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Convert to inventory data (skip header row)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>inventoryData = rows.slice(1).filter(row =&gt; row.length &gt;= 6 &amp;&amp; row[0]).map(row =&gt; ({</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>category: row[0] || '',</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>item: row[1] || '',</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>vendor: row[2] || '',</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>par: parseFloat(row[3]) || 0,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>onHand: parseFloat(row[4]) || 0,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>waste: parseFloat(row[5]) || 0</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}));</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('loading').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('content').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>renderInventory();</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>console.error('Error loading data:', error);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('loading').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('error').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function renderInventory() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const inventoryContainer = document.getElementById('inventory');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const categories = {};</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Group by category</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inventoryData.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!categories[item.category]) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>categories[item.category] = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>categories[item.category].push(item);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>let totalItems = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let criticalItems = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let lowItems = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let goodItems = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let hasCritical = false;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>let html = '';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>Object.keys(categories).forEach(category =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>html += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="category-section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="category-header"&gt;${category}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="item-grid header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;Item&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;Par&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;Count&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;Waste&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;Status&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>categories[category].forEach((item, index) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>totalItems++;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>let status = 'good';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>let statusText = 'Good';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>let statusClass = 'good';</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (item.onHand === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>status = 'critical';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>statusText = 'OUT';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>statusClass = 'critical';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>criticalItems++;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>hasCritical = true;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else if (item.onHand &lt;= item.par) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>status = 'low';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>statusText = 'Low';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>statusClass = 'low';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>lowItems++;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>goodItems++;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const itemIndex = inventoryData.findIndex(i =&gt; i === item);</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>html += `</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="item-grid ${statusClass}"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;${item.item}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;${item.par}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;input type="number"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>value="${item.onHand}"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>step="0.1"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>min="0"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>onchange="updateItem(${itemIndex}, 'onHand', this.value)"</p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>ontouchstart="this.focus()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;input type="number"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>value="${item.waste}"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>step="0.1"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>min="0"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>onchange="updateItem(${itemIndex}, 'waste', this.value)"</p>
-<p class="p1"><span class="Apple-converted-space">                                       </span>ontouchstart="this.focus()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div class="status-badge status-${status}"&gt;${statusText}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>html += '&lt;/div&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>inventoryContainer.innerHTML = html;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Update summary stats</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('totalItems').textContent = totalItems;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('criticalItems').textContent = criticalItems;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('lowItems').textContent = lowItems;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('goodItems').textContent = goodItems;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Show/hide critical alert</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('criticalAlert').style.display = hasCritical ? 'block' : 'none';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Update reorder lists</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateReorderLists();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateItem(index, field, value) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inventoryData[index][field] = parseFloat(value) || 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>hasChanges = true;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>renderInventory();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateReorderLists() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const vendors = {};</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>inventoryData.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (item.onHand &lt;= item.par) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (!vendors[item.vendor]) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>vendors[item.vendor] = [];</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>vendors[item.vendor].push(item);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>let html = '';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (Object.keys(vendors).length === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>html = '&lt;p style="text-align: center; color: #666;"&gt;<span class="s1">🎉</span> All items are well stocked!&lt;/p&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Object.keys(vendors).forEach(vendor =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>html += `</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="vendor-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h4&gt;<span class="s1">📦</span> ${vendor}&lt;/h4&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="vendor-items"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>`;</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>vendors[vendor].forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const needed = Math.max(1, (item.par * 2) - item.onHand);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>html += `</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="vendor-item"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;strong&gt;${item.item}&lt;/strong&gt;&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;small&gt;Have: ${item.onHand} | Need: ${needed}&lt;/small&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>html += `</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('vendorLists').innerHTML = html;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function saveToGoogleSheets() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!hasChanges) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alert('<span class="s1">✅</span> No changes to save!');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// In a real implementation, you'd use Google Sheets API to save data</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// For now, we'll show the data that would be saved</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const csvData = ['Category,Item,Vendor,Par,OnHand,Waste'];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inventoryData.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>csvData.push(`${item.category},${item.item},${item.vendor},${item.par},${item.onHand},${item.waste}`);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Create a downloadable backup</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const url = URL.createObjectURL(blob);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const a = document.createElement('a');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>a.href = url;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>a.download = `inventory-backup-${new Date().toISOString().split('T')[0]}.csv`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.body.appendChild(a);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>a.click();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.body.removeChild(a);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>URL.revokeObjectURL(url);</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>hasChanges = false;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>alert(`<span class="s1">✅</span> Evening count saved!\n\n<span class="s1">📊</span> Summary:\n• Total items: ${inventoryData.length}\n• Critical items: ${inventoryData.filter(i =&gt; i.onHand === 0).length}\n• Low stock: ${inventoryData.filter(i =&gt; i.onHand &gt; 0 &amp;&amp; i.onHand &lt;= i.par).length}\n\n<span class="s1">💾</span> Backup file downloaded\n<span class="s1">📋</span> Check Shopping Lists above for reorder needs`);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Make app installable on mobile</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let deferredPrompt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>window.addEventListener('beforeinstallprompt', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>e.preventDefault();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>deferredPrompt = e;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Show install button or prompt</p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (confirm('<span class="s1">📱</span> Add this inventory app to your home screen for easy access?')) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>deferredPrompt.prompt();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>deferredPrompt.userChoice.then((choiceResult) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>deferredPrompt = null;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}, 5000);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Auto-save on page unload</p>
-<p class="p1"><span class="Apple-converted-space">        </span>window.addEventListener('beforeunload', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (hasChanges) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>e.preventDefault();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Load data when page loads</p>
-<p class="p1"><span class="Apple-converted-space">        </span>loadData();</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Auto-refresh every 30 minutes</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setInterval(loadData, 30 * 60 * 1000);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <button class="refresh-btn" onclick="loadData()" title="Refresh Data">🔄</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>☕ Cafe Inventory</h1>
+            <p>Evening Count & Reorder Tracking</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('inventory')">📦 Inventory</button>
+            <button class="tab" onclick="showTab('shopping')">🛒 Shopping Lists</button>
+            <button class="tab" onclick="showTab('orders')">📋 Orders</button>
+            <button class="tab" onclick="showTab('analytics')">📊 Analytics</button>
+        </div>
+        
+        <div id="loading" class="loading">
+            📊 Loading inventory data...
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            ❌ Could not load data. Check your Google Sheets setup and try refreshing.
+        </div>
+        
+        <div class="tab-content">
+            <div id="inventory" class="tab-pane active" style="display: none;">
+                <div class="summary">
+                    <div class="stat">
+                        <div class="stat-number" id="totalItems">0</div>
+                        <div class="stat-label">Total Items</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="criticalItems">0</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="lowItems">0</div>
+                        <div class="stat-label">Low Stock</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="goodItems">0</div>
+                        <div class="stat-label">Good Stock</div>
+                    </div>
+                </div>
+                
+                <div id="criticalAlert" class="critical-alert" style="display: none;">
+                    🚨 CRITICAL: Some items are out of stock! Notify manager immediately!
+                </div>
+                
+                <div id="inventoryDisplay"></div>
+                
+                <button class="save-btn" onclick="saveInventory()">
+                    💾 Save Evening Count
+                </button>
+            </div>
+            
+            <div id="shopping" class="tab-pane">
+                <div class="vendor-section">
+                    <h3>📋 Shopping Lists by Vendor</h3>
+                    <div id="shoppingLists"></div>
+                </div>
+            </div>
+            
+            <div id="orders" class="tab-pane">
+                <div style="text-align: center; padding: 40px;">
+                    <h3>📋 Purchase Orders</h3>
+                    <p style="color: #666; margin: 20px 0;">Track your orders and deliveries here.</p>
+                    <p><em>Feature coming soon - integrate with your ordering process!</em></p>
+                </div>
+            </div>
+            
+            <div id="analytics" class="tab-pane">
+                <div style="text-align: center; padding: 40px;">
+                    <h3>📊 Analytics Dashboard</h3>
+                    <p style="color: #666; margin: 20px 0;">View spending trends and usage patterns.</p>
+                    <p><em>Feature coming soon - analyze your inventory data!</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THIS WITH YOUR ACTUAL GOOGLE SHEET ID
+        const SHEET_ID = '1Z0r0ys3OwvZVeNfB8VKhaCofgM4o7548NJ1JP5TTOJw';
+        const SHEET_NAME = 'Sheet1';
+        
+        let inventoryData = [];
+        let hasChanges = false;
+        
+        // Load data from Google Sheets
+        async function loadData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('inventory').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+                const response = await fetch(url);
+                const csvText = await response.text();
+                
+                // Parse CSV data
+                const rows = csvText.split('\n').map(row => {
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let i = 0; i < row.length; i++) {
+                        const char = row[i];
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            result.push(current.trim().replace(/^"|"$/g, ''));
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    result.push(current.trim().replace(/^"|"$/g, ''));
+                    return result;
+                });
+                
+                // Convert to inventory data (skip header row)
+                inventoryData = rows.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
+                    category: row[0] || '',
+                    item: row[1] || '',
+                    vendor: row[2] || '',
+                    par: parseFloat(row[3]) || 0,
+                    onHand: parseFloat(row[4]) || 0,
+                    waste: parseFloat(row[5]) || 0
+                }));
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('inventory').style.display = 'block';
+                renderInventory();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+        
+        function renderInventory() {
+            const container = document.getElementById('inventoryDisplay');
+            const categories = {};
+            
+            // Group by category
+            inventoryData.forEach(item => {
+                if (!categories[item.category]) {
+                    categories[item.category] = [];
+                }
+                categories[item.category].push(item);
+            });
+            
+            let totalItems = 0;
+            let criticalItems = 0;
+            let lowItems = 0;
+            let goodItems = 0;
+            let hasCritical = false;
+            
+            let html = '';
+            
+            Object.keys(categories).forEach(category => {
+                html += `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <span>${category}</span>
+                        </div>
+                        <div class="item-grid header">
+                            <div>Item</div>
+                            <div>Par</div>
+                            <div>Count</div>
+                            <div>Waste</div>
+                            <div>Status</div>
+                        </div>
+                `;
+                
+                categories[category].forEach((item, index) => {
+                    totalItems++;
+                    let status = 'good';
+                    let statusText = 'Good';
+                    let statusClass = 'good';
+                    
+                    if (item.onHand === 0) {
+                        status = 'critical';
+                        statusText = 'OUT';
+                        statusClass = 'critical';
+                        criticalItems++;
+                        hasCritical = true;
+                    } else if (item.onHand <= item.par) {
+                        status = 'low';
+                        statusText = 'Low';
+                        statusClass = 'low';
+                        lowItems++;
+                    } else {
+                        goodItems++;
+                    }
+                    
+                    const itemIndex = inventoryData.findIndex(i => i === item);
+                    
+                    html += `
+                        <div class="item-grid ${statusClass}">
+                            <div>${item.item}</div>
+                            <div>${item.par}</div>
+                            <div>
+                                <input type="number" 
+                                       value="${item.onHand}" 
+                                       step="0.1" 
+                                       min="0" 
+                                       onchange="updateItem(${itemIndex}, 'onHand', this.value)"
+                                       ontouchstart="this.focus()">
+                            </div>
+                            <div>
+                                <input type="number" 
+                                       value="${item.waste}" 
+                                       step="0.1" 
+                                       min="0" 
+                                       onchange="updateItem(${itemIndex}, 'waste', this.value)"
+                                       ontouchstart="this.focus()">
+                            </div>
+                            <div>
+                                <div class="status-badge status-${status}">${statusText}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+            
+            // Update summary stats
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('criticalItems').textContent = criticalItems;
+            document.getElementById('lowItems').textContent = lowItems;
+            document.getElementById('goodItems').textContent = goodItems;
+            
+            // Show/hide critical alert
+            document.getElementById('criticalAlert').style.display = hasCritical ? 'block' : 'none';
+            
+            // Update shopping lists
+            updateShoppingLists();
+        }
+        
+        function updateItem(index, field, value) {
+            inventoryData[index][field] = parseFloat(value) || 0;
+            hasChanges = true;
+            renderInventory();
+        }
+        
+        function updateShoppingLists() {
+            const vendors = {};
+            
+            inventoryData.forEach(item => {
+                if (item.onHand <= item.par) {
+                    if (!vendors[item.vendor]) {
+                        vendors[item.vendor] = [];
+                    }
+                    vendors[item.vendor].push(item);
+                }
+            });
+            
+            let html = '';
+            
+            if (Object.keys(vendors).length === 0) {
+                html = '<p style="text-align: center; color: #666;">🎉 All items are well stocked!</p>';
+            } else {
+                Object.keys(vendors).forEach(vendor => {
+                    html += `
+                        <div class="vendor-group">
+                            <h4>📦 ${vendor}</h4>
+                            <div class="vendor-items">
+                    `;
+                    
+                    vendors[vendor].forEach(item => {
+                        const needed = Math.max(1, (item.par * 2) - item.onHand);
+                        html += `
+                            <div class="vendor-item">
+                                <strong>${item.item}</strong><br>
+                                <small>Have: ${item.onHand} | Need: ${needed}</small>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('shoppingLists').innerHTML = html;
+        }
+        
+        function showTab(tabName) {
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab pane
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        
+        function saveInventory() {
+            if (!hasChanges) {
+                alert('✅ No changes to save!');
+                return;
+            }
+            
+            // Create a downloadable backup
+            const csvData = ['Category,Item,Vendor,Par,OnHand,Waste'];
+            inventoryData.forEach(item => {
+                csvData.push(`${item.category},${item.item},${item.vendor},${item.par},${item.onHand},${item.waste}`);
+            });
+            
+            const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `inventory-backup-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            hasChanges = false;
+            
+            alert(`✅ Evening count saved!\n\n📊 Summary:\n• Total items: ${inventoryData.length}\n• Critical items: ${inventoryData.filter(i => i.onHand === 0).length}\n• Low stock: ${inventoryData.filter(i => i.onHand > 0 && i.onHand <= i.par).length}\n\n💾 Backup file downloaded\n📋 Check Shopping Lists tab for reorder needs`);
+        }
+        
+        // Auto-save on page unload
+        window.addEventListener('beforeunload', (e) => {
+            if (hasChanges) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+        
+        // Load data when page loads
+        loadData();
+        
+        // Auto-refresh every 30 minutes
+        setInterval(loadData, 30 * 60 * 1000);
+    </script>
 </body>
 </html>
