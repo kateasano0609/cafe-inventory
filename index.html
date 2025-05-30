@@ -496,23 +496,45 @@
                 const encodedPayload = base64UrlEncode(JSON.stringify(payload));
                 const unsignedToken = `${encodedHeader}.${encodedPayload}`;
 
-                // Convert PEM to ArrayBuffer
+                // Convert PEM to ArrayBuffer with better error handling
                 const pemHeader = "-----BEGIN PRIVATE KEY-----";
                 const pemFooter = "-----END PRIVATE KEY-----";
+                
+                if (!config.PRIVATE_KEY.includes(pemHeader)) {
+                    throw new Error('Invalid private key format - missing BEGIN header');
+                }
+                
                 const pemContents = config.PRIVATE_KEY.replace(pemHeader, "").replace(pemFooter, "").replace(/\s/g, "");
-                const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+                
+                if (pemContents.length === 0) {
+                    throw new Error('Private key content is empty');
+                }
+                
+                console.log('Private key length:', pemContents.length);
+                
+                let binaryDer;
+                try {
+                    binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+                } catch (e) {
+                    throw new Error('Failed to decode private key: ' + e.message);
+                }
 
                 // Import the private key
-                const privateKey = await window.crypto.subtle.importKey(
-                    "pkcs8",
-                    binaryDer,
-                    {
-                        name: "RSASSA-PKCS1-v1_5",
-                        hash: "SHA-256",
-                    },
-                    false,
-                    ["sign"]
-                );
+                let privateKey;
+                try {
+                    privateKey = await window.crypto.subtle.importKey(
+                        "pkcs8",
+                        binaryDer,
+                        {
+                            name: "RSASSA-PKCS1-v1_5",
+                            hash: "SHA-256",
+                        },
+                        false,
+                        ["sign"]
+                    );
+                } catch (e) {
+                    throw new Error('Failed to import private key: ' + e.message);
+                }
 
                 // Sign the token
                 const signature = await window.crypto.subtle.sign(
@@ -538,22 +560,25 @@
 
                 const data = await response.json();
                 if (!response.ok) {
+                    console.error('Token response:', data);
                     throw new Error(data.error_description || 'Failed to get access token');
                 }
                 
                 return data.access_token;
             } catch (error) {
                 console.error('Error getting access token:', error);
-                throw new Error('Authentication failed. Please check your credentials.');
+                throw new Error('Authentication failed: ' + error.message);
             }
         }
 
         // Load inventory data from Google Sheets
         async function loadInventoryData() {
-            if (!config.CLIENT_EMAIL || !config.PRIVATE_KEY) {
-                showMessage('❌ Please enter your credentials first', 'error');
-                return;
-            }
+            // Use hardcoded CONFIG for now since you have credentials in the file
+            config = {
+                CLIENT_EMAIL: 'cafe-inventory-840@cafe-inventory-api.iam.gserviceaccount.com',
+                PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCOdFBJ182dDeS5\nhpXZ6dLzvAaNYIFnaCqsqyX307f+I6llVRm85ZlUywZ8X5cHixman4a8plPm77hH\nF93qMXQkIm9cG093WRIgOGKpRxu3Qams65+rLNPkV1H8N+eE4UC2qK2XK7MqmUO1\nuLAzSJWE9uRZXwT8mTaK1rL04y+PPx5X0Zn/b3TfTx4aLPqcNSC3Ljv3QDIGr5ax\nEYHaPx/Ncx+8Q3+73TvW8gHwUX2fjPXD4SuIiQXgk0M8IbQHeSzCTEAgHcnnL1Rm\nnF215sdAZm8F4qTNmpwDxAovzZkQYQCRR4tW77j/8v99wxouvR0ulRCQ/vpCWjYX\ntN9pwoEBAgMBAAECggEADkDgVzEg7TvahL8s/3msPi+0KqFrNTromTADO6erF2I/\nVOily38gH0o0pw1j9dDi0hQv5bCRQNA/zJo8Xa5Oz/5DjPBdHESU4hUuNwCKywRm\niyskxdp1hZmAlidMUqD8qgIY42Evmz2sVxKIi8sRjdUrvi76F2Gnoc7vZz4TkEYi\n4sszO6n+6BOboaGFUvbfcfkRRAoFz+rrwcbTnwOzcijlFTI+vKHuYn5Koyj881OK\n4jmngeve4tqZZuxFVrSV3MHP41zieF8TDSZHh73F2zAe/fyi6he7CfhN9+FmV8bd\n27HdA9Juib2IEyNGgbl6rbQbUvdlOzTpUWoU6d70KQKBgQDEW+Ey5p1HcpG53l23\nvvdNrSKF60Y3NP3ObFv7oZe6U0CASHXM/o3mMc77JnywwAojxGpCkRjcp8DKyvoK\nOMjQJcblJF25RIm/JNYKGSl1nRROcEqXCk34VlxmLBPKnv6B0zBOE3MWMn34NkId\nDrWV7/KxmX25Ko7QVA6luH+hmQKBgQC5uQVo+ybDvtmjfRfc266V0N3EL1Nh31gw\nO+b8swWhej41UYr4v3XWS2u+QkKJlcoC5lN8nOi6niLtRLS9I1Nj5MW1CrihJsan\nJyVyCcu0ypdQVLlVl6qfgIPTOeninqS54EG8ZmLFxBR3HhGY2xDWl1svcAhJNFPD\naJUoLhFLqQKBgQCA1B9ee/u4wqxlnEU0pvAuYGeEIabB1dynsGRxJcYckz6AbAoN\n4v1KiGdaVBf/ByAf82AcKIJ9UvqkkqOWTUdDeWWTNVbglN0jMZHUskmHRvXpuLbX\nfgVF57NbvZOGnuYwW1UYBJ6/c4U+cqrR0bLFmtZKO4BHGmr0uBGcHP5wEQKBgGeX\nfyAGbqHicyzQ2p2TX3crMHd8WksOM/d7giTTikF+mPJOkHCdApJMMUXHWau6hBpH\n9KteLiXhjOPBXfrdmGbwtSJ9X2xr34RevnE0a45lLi9dgp7uYPpkyaLo+78u8/zF\nzITUqyVacHvcpr4W+vZnKDJ2j/idGle1nvTxdS45AoGAFbQhI43ypxURRS/pFGn2\notxAkbtkh2ah1ygA2N8kju5dsRAA6Wv1cI3AqLawcMTXFi7ZqX2lEstL4/tXQio/\nvoepzmqHa7O7rG21QWj8PfKbgJ8wmQ0JRur3zNKZgO2EzuN+cj1OGST1sGtkEXY7\nkyQ7cGSZd2zdxl7cr69PWQU=\n-----END PRIVATE KEY-----\n',
+                SPREADSHEET_ID: '1Z0r0ys3OwvZVeNfB8VKhaCofgM4o7548NJ1JP5TTOJw'
+            };
 
             try {
                 showMessage('📦 Loading inventory data...', 'loading');
@@ -562,7 +587,7 @@
                     accessToken = await getAccessToken();
                 }
 
-                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}`, {
+                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${RANGE}`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
@@ -691,7 +716,7 @@
                     values: [[item.eveningCount]]
                 }));
 
-                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:batchUpdate`, {
+                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values:batchUpdate`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
