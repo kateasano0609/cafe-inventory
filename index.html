@@ -416,11 +416,16 @@
     </div>
 
     <script>
-        // REPLACE THIS WITH YOUR ACTUAL GOOGLE SHEET ID
+        // Your Google Sheets ID and tab names
         const SHEET_ID = '1Z0r0ys3OwvZVeNfB8VKhaCofgM4o7548NJ1JP5TTOJw';
-        const SHEET_NAME = 'Sheet1';
+        const INVENTORY_SHEET = 'Inventory';
+        const ORDERS_SHEET = 'Purchase Orders';
+        const INVOICES_SHEET = 'Invoices';
+        const ANALYTICS_SHEET = 'Analytics';
         
         let inventoryData = [];
+        let purchaseOrders = [];
+        let invoices = [];
         let hasChanges = false;
         
         // Load data from Google Sheets
@@ -430,33 +435,14 @@
             document.getElementById('error').style.display = 'none';
             
             try {
-                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
-                const response = await fetch(url);
-                const csvText = await response.text();
+                // Load inventory data
+                const inventoryUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${INVENTORY_SHEET}`;
+                const inventoryResponse = await fetch(inventoryUrl);
+                const inventoryCsv = await inventoryResponse.text();
                 
-                // Parse CSV data
-                const rows = csvText.split('\n').map(row => {
-                    const result = [];
-                    let current = '';
-                    let inQuotes = false;
-                    
-                    for (let i = 0; i < row.length; i++) {
-                        const char = row[i];
-                        if (char === '"') {
-                            inQuotes = !inQuotes;
-                        } else if (char === ',' && !inQuotes) {
-                            result.push(current.trim().replace(/^"|"$/g, ''));
-                            current = '';
-                        } else {
-                            current += char;
-                        }
-                    }
-                    result.push(current.trim().replace(/^"|"$/g, ''));
-                    return result;
-                });
-                
-                // Convert to inventory data (skip header row)
-                inventoryData = rows.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
+                // Parse inventory CSV data
+                const inventoryRows = parseCsv(inventoryCsv);
+                inventoryData = inventoryRows.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
                     category: row[0] || '',
                     item: row[1] || '',
                     vendor: row[2] || '',
@@ -464,6 +450,28 @@
                     onHand: parseFloat(row[4]) || 0,
                     waste: parseFloat(row[5]) || 0
                 }));
+                
+                // Try to load purchase orders (optional - might not exist yet)
+                try {
+                    const ordersUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDERS_SHEET}`;
+                    const ordersResponse = await fetch(ordersUrl);
+                    const ordersCsv = await ordersResponse.text();
+                    const ordersRows = parseCsv(ordersCsv);
+                    purchaseOrders = ordersRows.slice(1).filter(row => row.length >= 6).map(row => ({
+                        date: row[0] || '',
+                        vendor: row[1] || '',
+                        poNumber: row[2] || '',
+                        items: row[3] || '',
+                        totalCost: parseFloat(row[4]) || 0,
+                        status: row[5] || '',
+                        expectedDelivery: row[6] || '',
+                        notes: row[7] || '',
+                        receivedDate: row[8] || ''
+                    }));
+                } catch (e) {
+                    console.log('Purchase Orders sheet not found or empty - that\'s okay');
+                    purchaseOrders = [];
+                }
                 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('inventory').style.display = 'block';
@@ -474,6 +482,29 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error').style.display = 'block';
             }
+        }
+        
+        // Helper function to parse CSV
+        function parseCsv(csvText) {
+            return csvText.split('\n').map(row => {
+                const result = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < row.length; i++) {
+                    const char = row[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        result.push(current.trim().replace(/^"|"$/g, ''));
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                result.push(current.trim().replace(/^"|"$/g, ''));
+                return result;
+            });
         }
         
         function renderInventory() {
@@ -657,6 +688,33 @@
         }
         
         function loadOrdersTab() {
+            let recentOrdersHTML = '';
+            
+            if (purchaseOrders.length > 0) {
+                recentOrdersHTML = purchaseOrders.slice(0, 5).map(order => `
+                    <div style="background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 15px; margin: 10px 0; border-left: 4px solid ${order.status === 'Delivered' ? '#27ae60' : order.status === 'Ordered' ? '#f39c12' : '#3498db'};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <strong style="color: #2c3e50;">${order.poNumber || 'No PO#'} - ${order.vendor}</strong>
+                            <span style="background: ${order.status === 'Delivered' ? '#27ae60' : order.status === 'Ordered' ? '#f39c12' : '#3498db'}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">${order.status || 'Pending'}</span>
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">
+                            <div>Date: ${order.date || 'Not specified'}</div>
+                            <div>Cost: ${order.totalCost || '0.00'}</div>
+                            <div>Items: ${order.items || 'Not specified'}</div>
+                            ${order.expectedDelivery ? `<div>Expected: ${order.expectedDelivery}</div>` : ''}
+                            ${order.notes ? `<div>Notes: ${order.notes}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                recentOrdersHTML = `
+                    <div style="color: #666; text-align: center; padding: 20px;">
+                        <p>📊 No orders recorded yet</p>
+                        <p style="margin-top: 10px;"><em>Start by checking the Shopping Lists tab to see what needs ordering!</em></p>
+                    </div>
+                `;
+            }
+            
             document.getElementById('orders').innerHTML = `
                 <div style="padding: 20px;">
                     <h3 style="color: #2c3e50; margin-bottom: 20px;">📋 Purchase Order Tracking</h3>
@@ -672,21 +730,23 @@
                     </div>
                     
                     <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="color: #856404; margin-bottom: 15px;">📝 Order Tracking Tips</h4>
-                        <ul style="color: #856404; line-height: 1.6;">
-                            <li><strong>Take photos</strong> of your orders and upload to QuickBooks</li>
-                            <li><strong>Save confirmation emails</strong> from vendors</li>
-                            <li><strong>Update inventory</strong> when deliveries arrive</li>
-                            <li><strong>Track spending</strong> in QuickBooks for tax purposes</li>
-                        </ul>
+                        <h4 style="color: #856404; margin-bottom: 15px;">📝 How to Track Orders</h4>
+                        <ol style="color: #856404; line-height: 1.6;">
+                            <li><strong>Use Quick Order buttons</strong> above to see what to order</li>
+                            <li><strong>Place your order</strong> on vendor's website/phone</li>
+                            <li><strong>Add order details</strong> manually to the "Purchase Orders" tab in your Google Sheet</li>
+                            <li><strong>Take photo of receipt</strong> and upload to QuickBooks</li>
+                            <li><strong>Update status</strong> when order is delivered</li>
+                        </ol>
                     </div>
                     
                     <div style="background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 20px;">
                         <h4 style="color: #2c3e50; margin-bottom: 15px;">Recent Order Activity</h4>
-                        <div style="color: #666; text-align: center; padding: 20px;">
-                            <p>📊 Order history will appear here as you use the system</p>
-                            <p style="margin-top: 10px;"><em>Start by checking the Shopping Lists tab to see what needs ordering!</em></p>
-                        </div>
+                        ${recentOrdersHTML}
+                    </div>
+                    
+                    <div style="background: #d1ecf1; border: 2px solid #bee5eb; border-radius: 10px; padding: 15px; margin-top: 20px;">
+                        <p style="color: #0c5460; margin: 0;"><strong>💡 Pro Tip:</strong> After placing orders, manually add them to your Google Sheet's "Purchase Orders" tab to track delivery status and spending.</p>
                     </div>
                 </div>
             `;
