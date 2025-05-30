@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cafe Inventory</title>
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ2FmZSBJbnZlbnRvcnkiLCJzaG9ydF9uYW1lIjoiSW52ZW50b3J5IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1qUWlJR2hsYVdkb2REMGlNalFpSUhabGNuTnBiMjQ5SWpFdU1TSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklpQjJhV1YzUW05NFBTSXdJREFnTWpRZ01qUWlQaUJnSUdScGNtVmpkR2x2YmowZ2JIUnlJaUJtYVd4c1BTSWpNemN4WlRaMVBDOWNJRDB3SUV0bFRXODFOWFl4TURWeU5ERnlORTVpVkZoQU5XRnFUVlF5WnlJK1BDOXpkbWMrIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjI0eDI0In1dLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMzNDk4ZGIiLCJ0aGVtZV9jb2xvciI6IiMyYzNlNTAifQ==">
     <style>
         * {
             margin: 0;
@@ -16,11 +15,11 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 20px;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -45,15 +44,6 @@
             padding: 40px;
             color: #666;
             font-size: 1.2rem;
-        }
-        
-        .error {
-            text-align: center;
-            padding: 40px;
-            color: #dc3545;
-            background: #f8d7da;
-            margin: 20px;
-            border-radius: 10px;
         }
         
         .summary {
@@ -84,51 +74,8 @@
             margin-top: 5px;
         }
         
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            overflow-x: auto;
-        }
-        
-        .tab {
-            flex: 1;
-            min-width: 140px;
-            padding: 15px 10px;
-            background: #f8f9fa;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #495057;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .tab.active {
-            background: white;
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-        }
-        
-        .tab:hover {
-            background: #e9ecef;
-        }
-        
-        .tab-content {
-            padding: 20px;
-        }
-        
-        .tab-pane {
-            display: none;
-        }
-        
-        .tab-pane.active {
-            display: block;
-        }
-        
         .category-section {
-            margin: 20px 0;
+            margin: 20px;
             background: white;
             border-radius: 15px;
             overflow: hidden;
@@ -141,9 +88,6 @@
             padding: 15px 20px;
             font-size: 1.2rem;
             font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
         .item-grid {
@@ -250,17 +194,60 @@
             100% { opacity: 1; }
         }
         
-        .vendor-section {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
+        .refresh-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            z-index: 1000;
         }
         
-        .vendor-section h3 {
-            color: #856404;
-            margin-bottom: 15px;
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            padding: 20px;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
         }
         
         .vendor-group {
@@ -291,22 +278,6 @@
             font-size: 0.9rem;
         }
         
-        .refresh-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #3498db;
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-            z-index: 1000;
-        }
-        
         @media (max-width: 600px) {
             .item-grid {
                 grid-template-columns: 2fr 80px 80px 80px 60px;
@@ -321,15 +292,6 @@
             
             .summary {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tabs {
-                font-size: 0.8rem;
-            }
-            
-            .tab {
-                min-width: 100px;
-                padding: 12px 8px;
             }
         }
     </style>
@@ -346,16 +308,10 @@
         <div class="tabs">
             <button class="tab active" onclick="showTab('inventory')">📦 Inventory</button>
             <button class="tab" onclick="showTab('shopping')">🛒 Shopping Lists</button>
-            <button class="tab" onclick="showTab('orders')">📋 Orders</button>
-            <button class="tab" onclick="showTab('analytics')">📊 Analytics</button>
         </div>
         
         <div id="loading" class="loading">
             📊 Loading inventory data...
-        </div>
-        
-        <div id="error" class="error" style="display: none;">
-            ❌ Could not load data. Check your Google Sheets setup and try refreshing.
         </div>
         
         <div class="tab-content">
@@ -385,97 +341,64 @@
                 
                 <div id="inventoryDisplay"></div>
                 
-                <button class="save-btn" onclick="saveToGoogleSheets()">
-                    💾 Save to Google Sheets
+                <button class="save-btn" onclick="saveInventory()">
+                    💾 Save Evening Count to Google Sheets
                 </button>
             </div>
             
             <div id="shopping" class="tab-pane">
-                <div class="vendor-section">
-                    <h3>📋 Shopping Lists by Vendor</h3>
-                    <div id="shoppingLists"></div>
-                </div>
-            </div>
-            
-            <div id="orders" class="tab-pane">
-                <div style="text-align: center; padding: 40px;">
-                    <h3>📋 Purchase Orders</h3>
-                    <p style="color: #666; margin: 20px 0;">Track your orders and deliveries here.</p>
-                    <p><em>Feature coming soon - integrate with your ordering process!</em></p>
-                </div>
-            </div>
-            
-            <div id="analytics" class="tab-pane">
-                <div style="text-align: center; padding: 40px;">
-                    <h3>📊 Analytics Dashboard</h3>
-                    <p style="color: #666; margin: 20px 0;">View spending trends and usage patterns.</p>
-                    <p><em>Feature coming soon - analyze your inventory data!</em></p>
-                </div>
+                <h2 style="margin-bottom: 25px;">🛒 Shopping Lists by Vendor</h2>
+                <div id="shoppingLists"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Your Google Sheets ID and API configuration
+        // Your Google Sheets setup
         const SHEET_ID = '1Z0r0ys3OwvZVeNfB8VKhaCofgM4o7548NJ1JP5TTOJw';
-        const API_KEY = 'AIzaSyDz9vnpLAbaJc5q1_zN7yNqLbRLlD39c30'; // Replace with your actual API key
-        const INVENTORY_SHEET = 'Inventory';
-        const ORDERS_SHEET = 'Purchase Orders';
-        const INVOICES_SHEET = 'Invoices';
-        const ANALYTICS_SHEET = 'Analytics';
         
         let inventoryData = [];
-        let purchaseOrders = [];
-        let invoices = [];
         let hasChanges = false;
         
-        // Load data from Google Sheets using API
+        // Load data from Google Sheets using the public CSV method
         async function loadData() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('inventory').style.display = 'none';
-            document.getElementById('error').style.display = 'none';
             
             try {
-                // Load inventory data using Google Sheets API
-                const inventoryUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${INVENTORY_SHEET}?key=${API_KEY}`;
-                const inventoryResponse = await fetch(inventoryUrl);
-                const inventoryJson = await inventoryResponse.json();
+                // Use the public CSV export method
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+                const response = await fetch(url);
+                const csvText = await response.text();
                 
-                if (inventoryJson.values && inventoryJson.values.length > 1) {
-                    // Skip header row and convert to inventory data
-                    inventoryData = inventoryJson.values.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
-                        category: row[0] || '',
-                        item: row[1] || '',
-                        vendor: row[2] || '',
-                        par: parseFloat(row[3]) || 0,
-                        onHand: parseFloat(row[4]) || 0,
-                        waste: parseFloat(row[5]) || 0
-                    }));
-                }
+                console.log('Raw CSV data:', csvText); // Debug log
                 
-                // Try to load purchase orders
-                try {
-                    const ordersUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${ORDERS_SHEET}?key=${API_KEY}`;
-                    const ordersResponse = await fetch(ordersUrl);
-                    const ordersJson = await ordersResponse.json();
+                // Parse CSV data
+                const rows = csvText.split('\n');
+                console.log('CSV rows:', rows); // Debug log
+                
+                // Skip header row and process data
+                inventoryData = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row.trim()) continue; // Skip empty rows
                     
-                    if (ordersJson.values && ordersJson.values.length > 1) {
-                        purchaseOrders = ordersJson.values.slice(1).filter(row => row.length >= 6).map(row => ({
-                            date: row[0] || '',
-                            vendor: row[1] || '',
-                            poNumber: row[2] || '',
-                            items: row[3] || '',
-                            totalCost: parseFloat(row[4]) || 0,
-                            status: row[5] || '',
-                            expectedDelivery: row[6] || '',
-                            notes: row[7] || '',
-                            receivedDate: row[8] || ''
-                        }));
+                    // Simple CSV parsing
+                    const columns = row.split(',').map(col => col.replace(/"/g, '').trim());
+                    
+                    if (columns.length >= 6 && columns[0] && columns[1]) {
+                        inventoryData.push({
+                            category: columns[0] || '',
+                            item: columns[1] || '',
+                            vendor: columns[2] || '',
+                            par: parseFloat(columns[3]) || 0,
+                            onHand: parseFloat(columns[4]) || 0,
+                            waste: parseFloat(columns[5]) || 0
+                        });
                     }
-                } catch (e) {
-                    console.log('Purchase Orders sheet not found or empty');
-                    purchaseOrders = [];
                 }
+                
+                console.log('Parsed inventory data:', inventoryData); // Debug log
                 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('inventory').style.display = 'block';
@@ -483,128 +406,16 @@
                 
             } catch (error) {
                 console.error('Error loading data:', error);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error').style.display = 'block';
-                
-                // Fallback to CSV method if API fails
-                console.log('Falling back to CSV method...');
-                await loadDataFallback();
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #dc3545;">
+                        ❌ Could not load data from Google Sheets.<br><br>
+                        <strong>Please check:</strong><br>
+                        1. Google Sheet is set to "Anyone with link can view"<br>
+                        2. Sheet ID is correct: ${SHEET_ID}<br><br>
+                        <button onclick="loadData()" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">🔄 Try Again</button>
+                    </div>
+                `;
             }
-        }
-        
-        // Fallback method using CSV (original method)
-        async function loadDataFallback() {
-            try {
-                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${INVENTORY_SHEET}`;
-                const response = await fetch(url);
-                const csvText = await response.text();
-                
-                const rows = parseCsv(csvText);
-                inventoryData = rows.slice(1).filter(row => row.length >= 6 && row[0]).map(row => ({
-                    category: row[0] || '',
-                    item: row[1] || '',
-                    vendor: row[2] || '',
-                    par: parseFloat(row[3]) || 0,
-                    onHand: parseFloat(row[4]) || 0,
-                    waste: parseFloat(row[5]) || 0
-                }));
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('inventory').style.display = 'block';
-                renderInventory();
-            } catch (error) {
-                console.error('Fallback method also failed:', error);
-                document.getElementById('error').style.display = 'block';
-            }
-        }
-        
-        // Save inventory data back to Google Sheets
-        async function saveToGoogleSheets() {
-            if (!hasChanges) {
-                alert('✅ No changes to save!');
-                return;
-            }
-            
-            if (API_KEY === 'YOUR_API_KEY_HERE') {
-                // Fallback to download method if API key not set
-                downloadBackup();
-                return;
-            }
-            
-            try {
-                // Show saving indicator
-                const saveBtn = document.querySelector('.save-btn');
-                const originalText = saveBtn.textContent;
-                saveBtn.textContent = '💾 Saving...';
-                saveBtn.disabled = true;
-                
-                // Prepare data for Google Sheets
-                const values = [['Category', 'Item', 'Vendor', 'Par', 'OnHand', 'Waste']];
-                inventoryData.forEach(item => {
-                    values.push([
-                        item.category,
-                        item.item,
-                        item.vendor,
-                        item.par,
-                        item.onHand,
-                        item.waste
-                    ]);
-                });
-                
-                // Update Google Sheets using API
-                const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${INVENTORY_SHEET}?valueInputOption=RAW&key=${API_KEY}`;
-                
-                const response = await fetch(updateUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        values: values
-                    })
-                });
-                
-                if (response.ok) {
-                    hasChanges = false;
-                    saveBtn.textContent = '✅ Saved!';
-                    setTimeout(() => {
-                        saveBtn.textContent = originalText;
-                        saveBtn.disabled = false;
-                    }, 2000);
-                    
-                    alert(`✅ Inventory saved to Google Sheets!\n\n📊 Summary:\n• Total items: ${inventoryData.length}\n• Critical items: ${inventoryData.filter(i => i.onHand === 0).length}\n• Low stock: ${inventoryData.filter(i => i.onHand > 0 && i.onHand <= i.par).length}\n\n📋 Check Shopping Lists tab for reorder needs`);
-                } else {
-                    throw new Error('Failed to save to Google Sheets');
-                }
-                
-            } catch (error) {
-                console.error('Error saving to Google Sheets:', error);
-                
-                // Fallback to download method
-                downloadBackup();
-                
-                alert('⚠️ Could not save directly to Google Sheets. Downloaded backup file instead.\n\nTo enable direct saving:\n1. Set up Google Sheets API\n2. Add your API key to the code');
-            }
-        }
-        
-        // Backup download method
-        function downloadBackup() {
-            const csvData = ['Category,Item,Vendor,Par,OnHand,Waste'];
-            inventoryData.forEach(item => {
-                csvData.push(`${item.category},${item.item},${item.vendor},${item.par},${item.onHand},${item.waste}`);
-            });
-            
-            const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `inventory-backup-${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            hasChanges = false;
         }
         
         function renderInventory() {
@@ -630,9 +441,7 @@
             Object.keys(categories).forEach(category => {
                 html += `
                     <div class="category-section">
-                        <div class="category-header">
-                            <span>${category}</span>
-                        </div>
+                        <div class="category-header">${category}</div>
                         <div class="item-grid header">
                             <div>Item</div>
                             <div>Par</div>
@@ -777,204 +586,87 @@
             // Add active class to clicked tab
             event.target.classList.add('active');
             
-            // Load specific tab content
             if (tabName === 'shopping') {
                 updateShoppingLists();
-            } else if (tabName === 'orders') {
-                loadOrdersTab();
-            } else if (tabName === 'analytics') {
-                loadAnalyticsTab();
             }
         }
         
-        function loadOrdersTab() {
-            let recentOrdersHTML = '';
-            
-            if (purchaseOrders.length > 0) {
-                recentOrdersHTML = purchaseOrders.slice(0, 5).map(order => `
-                    <div style="background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 15px; margin: 10px 0; border-left: 4px solid ${order.status === 'Delivered' ? '#27ae60' : order.status === 'Ordered' ? '#f39c12' : '#3498db'};">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <strong style="color: #2c3e50;">${order.poNumber || 'No PO#'} - ${order.vendor}</strong>
-                            <span style="background: ${order.status === 'Delivered' ? '#27ae60' : order.status === 'Ordered' ? '#f39c12' : '#3498db'}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">${order.status || 'Pending'}</span>
-                        </div>
-                        <div style="color: #666; font-size: 0.9rem;">
-                            <div>Date: ${order.date || 'Not specified'}</div>
-                            <div>Cost: ${order.totalCost || '0.00'}</div>
-                            <div>Items: ${order.items || 'Not specified'}</div>
-                            ${order.expectedDelivery ? `<div>Expected: ${order.expectedDelivery}</div>` : ''}
-                            ${order.notes ? `<div>Notes: ${order.notes}</div>` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                recentOrdersHTML = `
-                    <div style="color: #666; text-align: center; padding: 20px;">
-                        <p>📊 No orders recorded yet</p>
-                        <p style="margin-top: 10px;"><em>Start by checking the Shopping Lists tab to see what needs ordering!</em></p>
-                    </div>
-                `;
-            }
-            
-            document.getElementById('orders').innerHTML = `
-                <div style="padding: 20px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 20px;">📋 Purchase Order Tracking</h3>
-                    
-                    <div style="background: #e8f5e8; border: 2px solid #27ae60; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="color: #2e7d32; margin-bottom: 15px;">Quick Order Actions</h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                            <button onclick="quickOrder('Restaurant Depot')" style="padding: 15px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">📦 Order from Restaurant Depot</button>
-                            <button onclick="quickOrder('Sysco')" style="padding: 15px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">🥫 Order from Sysco</button>
-                            <button onclick="quickOrder('Specialty Coffee')" style="padding: 15px; background: #8e44ad; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">☕ Order Coffee/Tea</button>
-                            <button onclick="quickOrder('Local Dairy')" style="padding: 15px; background: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">🥛 Order Dairy</button>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="color: #856404; margin-bottom: 15px;">📝 How to Track Orders</h4>
-                        <ol style="color: #856404; line-height: 1.6;">
-                            <li><strong>Use Quick Order buttons</strong> above to see what to order</li>
-                            <li><strong>Place your order</strong> on vendor's website/phone</li>
-                            <li><strong>Add order details</strong> manually to the "Purchase Orders" tab in your Google Sheet</li>
-                            <li><strong>Take photo of receipt</strong> and upload to QuickBooks</li>
-                            <li><strong>Update status</strong> when order is delivered</li>
-                        </ol>
-                    </div>
-                    
-                    <div style="background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 20px;">
-                        <h4 style="color: #2c3e50; margin-bottom: 15px;">Recent Order Activity</h4>
-                        ${recentOrdersHTML}
-                    </div>
-                    
-                    <div style="background: #d1ecf1; border: 2px solid #bee5eb; border-radius: 10px; padding: 15px; margin-top: 20px;">
-                        <p style="color: #0c5460; margin: 0;"><strong>💡 Pro Tip:</strong> After placing orders, manually add them to your Google Sheet's "Purchase Orders" tab to track delivery status and spending.</p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function loadAnalyticsTab() {
-            // Calculate some basic analytics from current inventory data
-            const totalItems = inventoryData.length;
-            const criticalCount = inventoryData.filter(item => item.onHand === 0).length;
-            const lowStockCount = inventoryData.filter(item => item.onHand > 0 && item.onHand <= item.par).length;
-            
-            // Group by vendor for vendor analysis
-            const vendorStats = {};
-            inventoryData.forEach(item => {
-                if (!vendorStats[item.vendor]) {
-                    vendorStats[item.vendor] = { total: 0, lowStock: 0, critical: 0 };
-                }
-                vendorStats[item.vendor].total++;
-                if (item.onHand === 0) vendorStats[item.vendor].critical++;
-                else if (item.onHand <= item.par) vendorStats[item.vendor].lowStock++;
-            });
-            
-            let vendorAnalysisHTML = '';
-            Object.keys(vendorStats).forEach(vendor => {
-                const stats = vendorStats[vendor];
-                vendorAnalysisHTML += `
-                    <div style="background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 15px; margin: 10px 0;">
-                        <h5 style="color: #2c3e50; margin-bottom: 10px;">📦 ${vendor}</h5>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: #3498db;">${stats.total}</div>
-                                <div style="font-size: 0.8rem; color: #666;">Total Items</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: #f39c12;">${stats.lowStock}</div>
-                                <div style="font-size: 0.8rem; color: #666;">Low Stock</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: #e74c3c;">${stats.critical}</div>
-                                <div style="font-size: 0.8rem; color: #666;">Critical</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            document.getElementById('analytics').innerHTML = `
-                <div style="padding: 20px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 20px;">📊 Inventory Analytics Dashboard</h3>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                        <div style="background: linear-gradient(45deg, #3498db, #2ecc71); color: white; padding: 20px; border-radius: 15px; text-align: center;">
-                            <h4 style="font-size: 2rem; margin-bottom: 5px;">${totalItems}</h4>
-                            <p>Total Items Tracked</p>
-                        </div>
-                        <div style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 20px; border-radius: 15px; text-align: center;">
-                            <h4 style="font-size: 2rem; margin-bottom: 5px;">${criticalCount}</h4>
-                            <p>Items Out of Stock</p>
-                        </div>
-                        <div style="background: linear-gradient(45deg, #f39c12, #e67e22); color: white; padding: 20px; border-radius: 15px; text-align: center;">
-                            <h4 style="font-size: 2rem; margin-bottom: 5px;">${lowStockCount}</h4>
-                            <p>Items Low on Stock</p>
-                        </div>
-                        <div style="background: linear-gradient(45deg, #9b59b6, #8e44ad); color: white; padding: 20px; border-radius: 15px; text-align: center;">
-                            <h4 style="font-size: 2rem; margin-bottom: 5px;">${Math.round((criticalCount + lowStockCount) / totalItems * 100)}%</h4>
-                            <p>Items Need Ordering</p>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #f8f9fa; border-radius: 15px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="color: #2c3e50; margin-bottom: 15px;">📈 Vendor Breakdown</h4>
-                        ${vendorAnalysisHTML}
-                    </div>
-                    
-                    <div style="background: #e8f5e8; border: 2px solid #27ae60; border-radius: 10px; padding: 20px;">
-                        <h4 style="color: #2e7d32; margin-bottom: 15px;">💡 Insights & Recommendations</h4>
-                        <div style="color: #2e7d32; line-height: 1.6;">
-                            ${criticalCount > 0 ? `<p>🚨 <strong>Urgent:</strong> ${criticalCount} items are completely out of stock and need immediate ordering.</p>` : ''}
-                            ${lowStockCount > 5 ? `<p>⚠️ <strong>Attention:</strong> ${lowStockCount} items are running low. Consider bulk ordering to reduce order frequency.</p>` : ''}
-                            <p>📋 <strong>Next Action:</strong> Check the Shopping Lists tab to see exactly what to order from each vendor.</p>
-                            <p>📊 <strong>Track Progress:</strong> Update inventory counts daily to maintain accurate reorder alerts.</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function quickOrder(vendor) {
-            const vendorItems = inventoryData.filter(item => 
-                item.vendor === vendor && item.onHand <= item.par
-            );
-            
-            if (vendorItems.length === 0) {
-                alert(`🎉 Great news! All ${vendor} items are well stocked right now.`);
+        // Save inventory using Google Apps Script (we'll set this up next)
+        async function saveInventory() {
+            if (!hasChanges) {
+                alert('✅ No changes to save!');
                 return;
             }
             
-            let orderList = `📋 ORDER LIST FOR ${vendor.toUpperCase()}\n\n`;
-            vendorItems.forEach(item => {
-                const needed = Math.max(1, (item.par * 2) - item.onHand);
-                orderList += `• ${item.item}: Need ${needed} (Currently have ${item.onHand})\n`;
-            });
-            orderList += `\n💡 Copy this list when ordering online or calling ${vendor}`;
+            // Show saving indicator
+            const saveBtn = document.querySelector('.save-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = '💾 Saving...';
+            saveBtn.disabled = true;
             
-            alert(orderList);
-        }
-        
-        // Helper function to parse CSV
-        function parseCsv(csvText) {
-            return csvText.split('\n').map(row => {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
+            try {
+                // Create the data in the exact format your Google Sheet expects
+                const updateData = inventoryData.map(item => [
+                    item.category,
+                    item.item,
+                    item.vendor,
+                    item.par,
+                    item.onHand,
+                    item.waste
+                ]);
                 
-                for (let i = 0; i < row.length; i++) {
-                    const char = row[i];
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        result.push(current.trim().replace(/^"|"$/g, ''));
-                        current = '';
-                    } else {
-                        current += char;
-                    }
+                // Your Google Apps Script URL for direct saving
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbw4FGtMnv1oRN0DumN3SfptRJh_Vki7n7ZkzW73pC4q7t_Cz_V5ZYAsd_57vlViHDWwsA/exec';
+                
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'updateInventory',
+                        data: updateData
+                    })
+                });
+                
+                if (response.ok) {
+                    hasChanges = false;
+                    saveBtn.textContent = '✅ Saved!';
+                    setTimeout(() => {
+                        saveBtn.textContent = originalText;
+                        saveBtn.disabled = false;
+                    }, 2000);
+                    
+                    alert(`✅ Inventory saved to Google Sheets!\n\n📊 Summary:\n• Total items: ${inventoryData.length}\n• Critical items: ${inventoryData.filter(i => i.onHand === 0).length}\n• Low stock: ${inventoryData.filter(i => i.onHand > 0 && i.onHand <= i.par).length}`);
+                } else {
+                    throw new Error('Failed to save');
                 }
-                result.push(current.trim().replace(/^"|"$/g, ''));
-                return result;
-            });
+                
+            } catch (error) {
+                console.error('Error saving:', error);
+                
+                // Fallback to CSV download
+                const csvData = ['Category,Item,Vendor,Par,OnHand,Waste'];
+                inventoryData.forEach(item => {
+                    csvData.push(`${item.category},${item.item},${item.vendor},${item.par},${item.onHand},${item.waste}`);
+                });
+                
+                const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `inventory-backup-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                hasChanges = false;
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+                
+                alert('⚠️ Direct save not set up yet. Downloaded backup CSV file instead.\n\nNext step: Set up Google Apps Script for direct saving.');
+            }
         }
         
         // Auto-save on page unload
